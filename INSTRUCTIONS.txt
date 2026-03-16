@@ -1,0 +1,52 @@
+🚀 GOOGLE CLOUD NATURAL LANGUAGE API - QUICK START GUIDE
+=========================================================
+
+This guide explains how to run, use, and test your FastAPI application.
+
+1. HOW TO RUN THE APPLICATION
+-----------------------------
+Open your terminal in the project folder and run:
+   python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+The application will be live at: http://localhost:8000
+
+
+2. WHAT THE SYSTEM COMPONENTS DO
+--------------------------------
+- app/main.py: The "brain" that connects everything together.
+- app/auth.py: The security guard. It checks if the user provided a valid 'X-API-Key'.
+- app/rate_limiter.py: The traffic controller. It ensures no single user sends more than 10 requests per minute.
+- app/nlp_service.py: The translator. It takes your text and sends it to Google Cloud for analysis.
+- .env: The safe. It stores your Google Cloud API key and your custom app keys.
+
+
+3. NECESSARY SETUP (IF NOT DONE YET)
+------------------------------------
+- Enable the API: You MUST enable the "Cloud Natural Language API" in your Google Cloud Console.
+- Dependencies: Run 'pip install -r requirements.txt' to install all needed tools.
+
+
+4. HOW TO TRY OUT THE ENDPOINTS
+-------------------------------
+There are two ways to test the API:
+
+METHOD A: EXTREMELY EASY (Web Browser)
+1. Open your browser to: http://localhost:8000/docs
+2. Click the green "Authorize" button at the top right.
+3. Type 'test-api-key-1' (or whatever you set in .env) and click Authorize.
+4. Expand any endpoint (e.g., /api/v1/nlp/sentiment), click "Try it out", and click "Execute".
+
+METHOD B: TECHNICAL (PowerShell)
+Copy and paste this into PowerShell to test sentiment analysis:
+
+$headers = @{"X-API-Key" = "test-api-key-1"}
+$body = @{text = "I love this project!"} | ConvertTo-Json
+Invoke-RestMethod -Uri "http://localhost:8000/api/v1/nlp/sentiment" -Method Post -Headers $headers -ContentType "application/json" -Body $body
+
+
+5. TROUBLESHOOTING
+------------------
+- 401 Unauthorized: Your 'X-API-Key' header is missing or wrong.
+- 429 Too Many Requests: You are sending requests too fast (max 10 per minute).
+- 502 Bad Gateway: There is an error with the Google Cloud Key or the API is not enabled in Google Console.
+- 400 Bad Request: For Classification, you need at least 20 words in your text.

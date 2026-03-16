@@ -1,0 +1,574 @@
+# 🌐 Google Cloud Natural Language API Service
+
+A production-ready **FastAPI** application that integrates with the **Google Cloud Natural Language API** to provide text analysis capabilities — including sentiment analysis, entity extraction, syntax analysis, and content classification — behind **authenticated** and **rate-limited** endpoints.
+
+---
+
+## ✨ Features
+
+- **Sentiment Analysis** — Determine the overall sentiment (positive/negative) and emotional magnitude of text at both document and sentence level.
+- **Entity Extraction** — Identify named entities (people, organizations, locations, events, etc.) with salience scores and metadata.
+- **Syntax Analysis** — Get part-of-speech tags, dependency parse trees, and lemmas for every token.
+- **Content Classification** — Categorize text into content categories (e.g., Science, Technology, Sports).
+- **API Key Authentication** — Secure endpoints via `X-API-Key` header validation.
+- **Rate Limiting** — Prevent abuse with configurable per-key request limits (default: 10 requests/minute).
+- **Interactive API Docs** — Auto-generated Swagger UI (`/docs`) and ReDoc (`/redoc`).
+- **Comprehensive Error Handling** — Meaningful error messages for invalid requests, auth failures, rate limits, and upstream API errors.
+
+---
+
+## 📋 Prerequisites
+
+| Requirement | Details |
+|---|---|
+| **Python** | 3.10 or higher |
+| **Google Cloud Account** | With billing enabled (Free Tier available) |
+| **Google Cloud Project** | Natural Language API enabled |
+| **Google Cloud API Key** | Primary authentication method (simpler) |
+| **Service Account Key** | Alternative authentication method (JSON) |
+
+### Google Cloud Setup
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2. Create a new project (or select an existing one).
+3. Enable the **Cloud Natural Language API**:
+   - Navigate to **APIs & Services → Library**.
+   - Search for "Cloud Natural Language API" and click **Enable**.
+4. Create a **Service Account**:
+   - Navigate to **IAM & Admin → Service Accounts**.
+   - Click **Create Service Account**, give it a name, and grant the role **Cloud Natural Language API User**.
+   - Click **Keys → Add Key → Create New Key → JSON**.
+   - Download the JSON key file and save it securely in your project directory.
+
+---
+
+## 🚀 Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/rinkunalla/google-cloud-nlp-fastapi.git
+cd google-cloud-nlp-fastapi
+```
+
+### 2. Create a Virtual Environment
+
+```bash
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# macOS/Linux
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure Environment Variables
+
+```bash
+# Copy the example environment file
+cp .env.example .env
+```
+
+Edit `.env` with your settings (see Configuration Guide below).
+
+### 5. Run the Application
+
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+The API will be available at `http://localhost:8000`. Visit `http://localhost:8000/docs` for the interactive Swagger UI.
+
+---
+
+## 🏁 Quick Start Guide (Step-by-Step)
+
+Follow these steps **after installation** to get everything running:
+
+### Step 1: Set Up Google Cloud API Key
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
+2. Create an **API Key** if you don't have one.
+3. (Optional) If you prefer using a Service Account, download the JSON key file and place it in the project root.
+
+### Step 2: Configure Your `.env` File
+
+1. Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
+2. Open `.env` and update your keys:
+   ```env
+   # Option 1: YOUR GOOGLE CLOUD API KEY (Recommended)
+   GOOGLE_CLOUD_API_KEY=AIzaSy...
+
+   # Option 2: Service Account JSON (Optional)
+   # GOOGLE_APPLICATION_CREDENTIALS=./service-account.json
+
+   # YOUR CUSTOM APP KEYS (for users)
+   API_KEYS=test-api-key-1,test-api-key-2
+
+   # RATE LIMIT
+   RATE_LIMIT=10/minute
+   ```
+
+> **Tip:** Generate strong API keys using Python:
+> ```bash
+> python -c "import secrets; print(secrets.token_urlsafe(32))"
+> ```
+
+### Step 3: Fill In Team Members
+
+Open `README.md` and scroll to the [Team Members and Contributions](#-team-members-and-contributions) section. Replace the placeholder names with your actual team member information:
+
+```markdown
+| Name | Role | Contributions |
+|---|---|---|
+| Juan Dela Cruz | Lead Developer | FastAPI setup, NLP service integration |
+| Maria Santos | Security & DevOps | Authentication, rate limiting |
+| Pedro Reyes | Documentation & Testing | README, API testing, troubleshooting |
+```
+
+### Step 4: Initialize Git and Push to GitHub
+
+1. Create a new repository on [GitHub](https://github.com/new) (do **not** initialize it with a README).
+2. Run the following commands in your project directory:
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit: FastAPI + Google Cloud NLP API integration"
+   git branch -M main
+   git remote add origin https://github.com/your-username/your-repo-name.git
+   git push -u origin main
+   ```
+
+### Step 5: Run and Verify
+
+```bash
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+Then open your browser to `http://localhost:8000/docs` to test the endpoints using the interactive Swagger UI.
+
+---
+
+## ⚙️ Configuration Guide
+
+### Environment Variables
+
+Create a `.env` file in the project root with the following variables:
+
+| Variable | Description | Example |
+|---|---|---|
+| `GOOGLE_APPLICATION_CREDENTIALS` | Path to your Google Cloud service account JSON key file | `./service-account.json` |
+| `API_KEYS` | Comma-separated list of valid API keys for authentication | `my-secret-key-1,my-secret-key-2` |
+| `RATE_LIMIT` | Maximum requests per time window per API key | `10/minute` |
+
+### Example `.env` File
+
+```env
+GOOGLE_APPLICATION_CREDENTIALS=./service-account.json
+API_KEYS=my-secret-key-1,my-secret-key-2
+RATE_LIMIT=10/minute
+```
+
+### Setting Up Google Cloud Credentials
+
+1. Place the downloaded JSON key file in the project root directory.
+2. Set `GOOGLE_APPLICATION_CREDENTIALS` in `.env` to the path of the key file.
+3. Alternatively, set the environment variable directly:
+   ```bash
+   # Windows
+   set GOOGLE_APPLICATION_CREDENTIALS=C:\path\to\your\service-account.json
+
+   # macOS/Linux
+   export GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/service-account.json
+   ```
+
+---
+
+## 📡 API Endpoints Documentation
+
+### Base URL
+
+```
+http://localhost:8000
+```
+
+### Authentication
+
+All `/api/v1/nlp/*` endpoints require an API key passed via the `X-API-Key` header.
+
+### Endpoints
+
+#### `GET /` — Health Check
+
+No authentication required.
+
+```bash
+curl http://localhost:8000/
+```
+
+**Response (200):**
+
+```json
+{
+  "status": "healthy",
+  "service": "Google Cloud Natural Language API Service",
+  "version": "1.0.0"
+}
+```
+
+---
+
+#### `POST /api/v1/nlp/sentiment` — Analyze Sentiment
+
+Analyzes the sentiment of the provided text, returning document-level and sentence-level scores.
+
+**Request:**
+
+```bash
+curl -X POST http://localhost:8000/api/v1/nlp/sentiment \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: my-secret-key-1" \
+  -d '{
+    "text": "I absolutely love this product! It works perfectly. However, the packaging was damaged.",
+    "language": "en"
+  }'
+```
+
+**Response (200):**
+
+```json
+{
+  "document_sentiment": {
+    "score": 0.4,
+    "magnitude": 1.6
+  },
+  "sentences": [
+    {
+      "text": "I absolutely love this product!",
+      "sentiment": { "score": 0.9, "magnitude": 0.9 }
+    },
+    {
+      "text": "It works perfectly.",
+      "sentiment": { "score": 0.8, "magnitude": 0.8 }
+    },
+    {
+      "text": "However, the packaging was damaged.",
+      "sentiment": { "score": -0.6, "magnitude": 0.6 }
+    }
+  ],
+  "language": "en"
+}
+```
+
+---
+
+#### `POST /api/v1/nlp/entities` — Extract Entities
+
+Identifies named entities in the text with their types, salience scores, and metadata.
+
+**Request:**
+
+```bash
+curl -X POST http://localhost:8000/api/v1/nlp/entities \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: my-secret-key-1" \
+  -d '{
+    "text": "Google was founded by Larry Page and Sergey Brin in Menlo Park, California.",
+    "language": "en"
+  }'
+```
+
+**Response (200):**
+
+```json
+{
+  "entities": [
+    {
+      "name": "Google",
+      "type": "ORGANIZATION",
+      "salience": 0.52,
+      "mentions": [{ "text": "Google", "type": "PROPER" }],
+      "metadata": { "wikipedia_url": "https://en.wikipedia.org/wiki/Google" }
+    },
+    {
+      "name": "Larry Page",
+      "type": "PERSON",
+      "salience": 0.18,
+      "mentions": [{ "text": "Larry Page", "type": "PROPER" }],
+      "metadata": {}
+    }
+  ],
+  "language": "en"
+}
+```
+
+---
+
+#### `POST /api/v1/nlp/syntax` — Analyze Syntax
+
+Returns part-of-speech tags, dependency parse information, and lemmas for each word.
+
+**Request:**
+
+```bash
+curl -X POST http://localhost:8000/api/v1/nlp/syntax \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: my-secret-key-1" \
+  -d '{
+    "text": "The quick brown fox jumps over the lazy dog.",
+    "language": "en"
+  }'
+```
+
+**Response (200):**
+
+```json
+{
+  "tokens": [
+    { "text": "The", "part_of_speech": "DET", "dependency_edge": "DET", "lemma": "The" },
+    { "text": "quick", "part_of_speech": "ADJ", "dependency_edge": "AMOD", "lemma": "quick" },
+    { "text": "brown", "part_of_speech": "ADJ", "dependency_edge": "AMOD", "lemma": "brown" },
+    { "text": "fox", "part_of_speech": "NOUN", "dependency_edge": "NSUBJ", "lemma": "fox" },
+    { "text": "jumps", "part_of_speech": "VERB", "dependency_edge": "ROOT", "lemma": "jump" }
+  ],
+  "sentences": ["The quick brown fox jumps over the lazy dog."],
+  "language": "en"
+}
+```
+
+---
+
+#### `POST /api/v1/nlp/classify` — Classify Content
+
+Categorizes text into content categories. **The text must contain at least 20 words.**
+
+**Request:**
+
+```bash
+curl -X POST http://localhost:8000/api/v1/nlp/classify \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: my-secret-key-1" \
+  -d '{
+    "text": "Python is a versatile programming language used extensively in data science, machine learning, and web development. Its simple syntax and large ecosystem of libraries make it ideal for beginners and professionals alike.",
+    "language": "en"
+  }'
+```
+
+**Response (200):**
+
+```json
+{
+  "categories": [
+    { "name": "/Computers & Electronics/Programming", "confidence": 0.89 },
+    { "name": "/Science/Computer Science", "confidence": 0.72 }
+  ]
+}
+```
+
+---
+
+## 🔐 Authentication & Rate Limiting Details
+
+### Authentication: API Key
+
+This application uses **API Key authentication** via the `X-API-Key` HTTP header.
+
+| Aspect | Details |
+|---|---|
+| **Header Name** | `X-API-Key` |
+| **Key Source** | Configured in `.env` via the `API_KEYS` variable |
+| **Multiple Keys** | Supported — separate with commas |
+| **Missing/Invalid Key** | Returns `401 Unauthorized` |
+
+**How it works:**
+
+1. Every request to `/api/v1/nlp/*` endpoints must include the `X-API-Key` header.
+2. The server validates the key against the list of keys defined in the `API_KEYS` environment variable.
+3. If the key is missing or invalid, the server responds with a `401 Unauthorized` error.
+
+**Example error (missing key):**
+
+```json
+{
+  "detail": "Missing API Key. Please provide a valid API key in the X-API-Key header."
+}
+```
+
+### Rate Limiting
+
+Rate limiting is implemented using **SlowAPI** to prevent abuse and ensure fair usage.
+
+| Aspect | Details |
+|---|---|
+| **Default Limit** | 10 requests per minute |
+| **Limit Scope** | Per API key (falls back to IP if no key) |
+| **Configuration** | Set via `RATE_LIMIT` in `.env` |
+| **Exceeded Response** | `429 Too Many Requests` |
+
+**How it works:**
+
+1. Each API key has its own rate counter.
+2. When a request is made, the counter is incremented.
+3. If the counter exceeds the configured limit within the time window, the server responds with `429`.
+4. The counter resets automatically after the time window expires.
+
+**Example rate limit formats:**
+
+```
+10/minute      # 10 requests per minute
+100/hour       # 100 requests per hour
+1000/day       # 1000 requests per day
+```
+
+---
+
+## 🧪 Testing Instructions
+
+### 1. Start the Server
+
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### 2. Test Health Check
+
+```bash
+curl http://localhost:8000/
+```
+
+Expected: `200 OK` with `"status": "healthy"`.
+
+### 3. Test Authentication
+
+**Missing API Key (expect 401):**
+
+```bash
+curl -X POST http://localhost:8000/api/v1/nlp/sentiment \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Hello world"}'
+```
+
+**Invalid API Key (expect 401):**
+
+```bash
+curl -X POST http://localhost:8000/api/v1/nlp/sentiment \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: invalid-key" \
+  -d '{"text": "Hello world"}'
+```
+
+**Valid API Key (expect 200):**
+
+```bash
+curl -X POST http://localhost:8000/api/v1/nlp/sentiment \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: my-secret-key-1" \
+  -d '{"text": "I love this product! It is amazing."}'
+```
+
+### 4. Test Rate Limiting
+
+Send more than 10 requests within a minute to observe the `429 Too Many Requests` response:
+
+```bash
+# PowerShell: Rapid-fire 12 requests
+for ($i = 1; $i -le 12; $i++) {
+  Write-Host "Request $i :"
+  curl -X POST http://localhost:8000/api/v1/nlp/sentiment `
+    -H "Content-Type: application/json" `
+    -H "X-API-Key: my-secret-key-1" `
+    -d '{\"text\": \"Testing rate limiting.\"}'
+  Write-Host ""
+}
+```
+
+After 10 requests, subsequent ones should return `429`.
+
+### 5. Test Using Swagger UI
+
+Open `http://localhost:8000/docs` in your browser to test all endpoints interactively using the built-in Swagger UI. Click the **Authorize** button and enter your API key.
+
+---
+
+## 🔧 Troubleshooting Guide
+
+| Problem | Cause | Solution |
+|---|---|---|
+| `401 Unauthorized` | Missing or invalid API key | Ensure `X-API-Key` header matches a key in your `.env` `API_KEYS` |
+| `429 Too Many Requests` | Rate limit exceeded | Wait for the rate window to reset, or increase `RATE_LIMIT` in `.env` |
+| `500 Internal Server Error` | Google Cloud credentials issue | Verify `GOOGLE_APPLICATION_CREDENTIALS` path is correct and the file exists |
+| `502 Bad Gateway` | Google Cloud API error | Check that the Natural Language API is enabled in your GCP project |
+| `400 Bad Request` on `/classify` | Text too short | Classification requires at least 20 words in the text |
+| `ModuleNotFoundError` | Missing dependencies | Run `pip install -r requirements.txt` |
+| Server won't start | Port in use | Change port: `uvicorn app.main:app --port 8001` |
+| `.env` not loading | File not found | Ensure `.env` is in the project root directory (same level as `app/`) |
+
+### Common Debug Steps
+
+1. **Verify Google Cloud setup:**
+   ```bash
+   # Test if credentials are valid
+   python -c "from google.cloud import language_v1; client = language_v1.LanguageServiceClient(); print('Credentials OK')"
+   ```
+
+2. **Check environment variables:**
+   ```bash
+   python -c "from app.config import get_settings; s = get_settings(); print(f'Keys: {s.api_keys_list}'); print(f'Rate: {s.RATE_LIMIT}')"
+   ```
+
+3. **Enable debug logging:**
+   ```bash
+   uvicorn app.main:app --reload --log-level debug
+   ```
+
+---
+
+## 📁 Project Structure
+
+```
+Google Cloud Natural Language API/
+├── app/
+│   ├── __init__.py            # Package initializer
+│   ├── main.py                # FastAPI application entry point
+│   ├── config.py              # Environment configuration (pydantic-settings)
+│   ├── auth.py                # API Key authentication dependency
+│   ├── rate_limiter.py        # SlowAPI rate limiting setup
+│   ├── models.py              # Pydantic request/response schemas
+│   ├── nlp_service.py         # Google Cloud NLP API wrapper
+│   └── routes/
+│       ├── __init__.py        # Routes package initializer
+│       └── nlp.py             # NLP endpoint definitions
+├── .env                       # Environment variables (not in git)
+├── .env.example               # Environment variable template
+├── .gitignore                 # Git ignore rules
+├── requirements.txt           # Python dependencies
+└── README.md                  # This file
+```
+
+---
+
+## 👥 Team Members and Contributions
+
+| Name | Role | Contributions |
+|---|---|---|
+| *Member 1* | *Lead Developer* | *FastAPI setup, NLP service integration, endpoint development* |
+| *Member 2* | *Security & DevOps* | *Authentication implementation, rate limiting, deployment configuration* |
+| *Member 3* | *Documentation & Testing* | *README documentation, API testing, troubleshooting guide* |
+
+> **Note:** Replace the placeholder names and contributions above with your actual team member information.
+
+---
+
+## 📄 License
+
+This project was developed as part of **ITP 322 – Systems Integration and Architecture 2**.
