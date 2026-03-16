@@ -6,7 +6,7 @@ This guide explains how to run, use, and test your FastAPI application.
 1. HOW TO RUN THE APPLICATION
 -----------------------------
 Open your terminal in the project folder and run:
-   python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+   python -m uvicorn app.main:app --reload
 
 The application will be live at: http://localhost:8000
 

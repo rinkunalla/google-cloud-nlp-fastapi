@@ -107,13 +107,13 @@ Follow these steps **after installation** to get everything running:
 2. Open `.env` and update your keys:
    ```env
    # Option 1: YOUR GOOGLE CLOUD API KEY (Recommended)
-   GOOGLE_CLOUD_API_KEY=AIzaSy...
+   GOOGLE_CLOUD_API_KEY="Input Your Google Cloud API Key Here"
 
    # Option 2: Service Account JSON (Optional)
    # GOOGLE_APPLICATION_CREDENTIALS=./service-account.json
 
-   # YOUR CUSTOM APP KEYS (for users)
-   API_KEYS=test-api-key-1,test-api-key-2
+   # YOUR CUSTOM APP KEYS (any string)
+   API_KEYS="Input Your Custom App Keys Here. use comma as separator to add more keys"
 
    # RATE LIMIT
    RATE_LIMIT=10/minute
@@ -124,36 +124,13 @@ Follow these steps **after installation** to get everything running:
 > python -c "import secrets; print(secrets.token_urlsafe(32))"
 > ```
 
-### Step 3: Fill In Team Members
-
-Open `README.md` and scroll to the [Team Members and Contributions](#-team-members-and-contributions) section. Replace the placeholder names with your actual team member information:
-
-```markdown
-| Name | Role | Contributions |
-|---|---|---|
-| Juan Dela Cruz | Lead Developer | FastAPI setup, NLP service integration |
-| Maria Santos | Security & DevOps | Authentication, rate limiting |
-| Pedro Reyes | Documentation & Testing | README, API testing, troubleshooting |
-```
-
-### Step 4: Initialize Git and Push to GitHub
-
-1. Create a new repository on [GitHub](https://github.com/new) (do **not** initialize it with a README).
-2. Run the following commands in your project directory:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit: FastAPI + Google Cloud NLP API integration"
-   git branch -M main
-   git remote add origin https://github.com/your-username/your-repo-name.git
-   git push -u origin main
-   ```
-
-### Step 5: Run and Verify
+### Step 3: Run and Verify
 
 ```bash
-python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+python -m uvicorn app.main:app --reload
 ```
+
+Once the server is running, visit `http://localhost:8000/docs` to test the endpoints!
 
 Then open your browser to `http://localhost:8000/docs` to test the endpoints using the interactive Swagger UI.
 
@@ -167,15 +144,15 @@ Create a `.env` file in the project root with the following variables:
 
 | Variable | Description | Example |
 |---|---|---|
-| `GOOGLE_APPLICATION_CREDENTIALS` | Path to your Google Cloud service account JSON key file | `./service-account.json` |
-| `API_KEYS` | Comma-separated list of valid API keys for authentication | `my-secret-key-1,my-secret-key-2` |
+| `GOOGLE_CLOUD_API_KEY` | Your Google Cloud API key (Primary Auth) | `AIzaSy...` |
+| `API_KEYS` | Comma-separated list of valid keys for your users | `key-1,key-2` |
 | `RATE_LIMIT` | Maximum requests per time window per API key | `10/minute` |
 
 ### Example `.env` File
 
 ```env
-GOOGLE_APPLICATION_CREDENTIALS=./service-account.json
-API_KEYS=my-secret-key-1,my-secret-key-2
+GOOGLE_CLOUD_API_KEY=your-actual-google-api-key
+API_KEYS=test-api-key-1,test-api-key-2
 RATE_LIMIT=10/minute
 ```
 
@@ -437,7 +414,7 @@ Rate limiting is implemented using **SlowAPI** to prevent abuse and ensure fair 
 ### 1. Start the Server
 
 ```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+python -m uvicorn app.main:app --reload
 ```
 
 ### 2. Test Health Check
