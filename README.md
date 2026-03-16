@@ -81,7 +81,7 @@ Edit `.env` with your settings (see Configuration Guide below).
 ### 5. Run the Application
 
 ```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload
 ```
 
 The API will be available at `http://localhost:8000`. Visit `http://localhost:8000/docs` for the interactive Swagger UI.
