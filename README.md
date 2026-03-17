@@ -12,7 +12,6 @@ A production-ready **FastAPI** application that integrates with the **Google Clo
 - **Content Classification** — Categorize text into content categories (e.g., Science, Technology, Sports).
 - **API Key Authentication** — Secure endpoints via `X-API-Key` header validation.
 - **Rate Limiting** — Prevent abuse with configurable per-key request limits (default: 10 requests/minute).
-- **Interactive API Docs** — Auto-generated Swagger UI (`/docs`) and ReDoc (`/redoc`).
 - **Comprehensive Error Handling** — Meaningful error messages for invalid requests, auth failures, rate limits, and upstream API errors.
 
 ---
