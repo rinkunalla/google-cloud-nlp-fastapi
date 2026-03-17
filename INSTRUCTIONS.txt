@@ -49,4 +49,12 @@ Invoke-RestMethod -Uri "http://localhost:8000/api/v1/nlp/sentiment" -Method Post
 - 401 Unauthorized: Your 'X-API-Key' header is missing or wrong.
 - 429 Too Many Requests: You are sending requests too fast (max 10 per minute).
 - 502 Bad Gateway: There is an error with the Google Cloud Key or the API is not enabled in Google Console.
-- 400 Bad Request: For Classification, you need at least 20 words in your text.
+- 400 Bad Request: For Classification, you need at least 20 words in your text. Or, Google doesn't support that language for that feature yet.
+
+
+6. SMART LANGUAGE TIPS (DISCARD CONFUSION!)
+-------------------------------------------
+- AUTO-DETECT: Most of the time, just leave it on "Auto-detect". The AI is smart!
+- NATIVE CHARACTERS: If you want to analyze Japanese or Chinese, use the actual characters (こんにちは). 
+- ROMANIZATION: If you type Japanese using English letters (e.g., "Konnichiwa"), the AI will think it's English. If you MUST use English letters for foreign words, manually select the language from the list instead of using Auto-detect.
+- NOT SUPPORTED: If you see "Filipino (Not Supported)", it means Google's AI hasn't learned that specific feature for that language yet. Try English or Spanish for the best results!

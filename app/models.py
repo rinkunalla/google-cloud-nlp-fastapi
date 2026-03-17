@@ -1,9 +1,31 @@
-"""
-Pydantic models for request validation and response serialization.
-"""
-
+from enum import Enum
 from pydantic import BaseModel, Field
 from typing import Optional
+
+
+class LanguageCode(str, Enum):
+    """
+    Language selection for Google Cloud NLP.
+    - Auto_Detect (Default): Let the AI automatically identify the language.
+    - (Supported): Manually select if detection fails or for specific hints.
+    - (Not Supported): Features might fail as Google doesn't officially support these yet.
+    """
+    Auto_Detect = "Auto-detect (Recommended)"
+    English_Supported = "English (Supported)"
+    Spanish_Supported = "Spanish (Supported)"
+    French_Supported = "French (Supported)"
+    German_Supported = "German (Supported)"
+    Italian_Supported = "Italian (Supported)"
+    Japanese_Supported = "Japanese (Supported)"
+    Korean_Supported = "Korean (Supported)"
+    Portuguese_Supported = "Portuguese (Supported)"
+    Dutch_Supported = "Dutch (Supported)"
+    Chinese_Simplified_Supported = "Chinese_Simplified (Supported)"
+    Chinese_Traditional_Supported = "Chinese_Traditional (Supported)"
+    Filipino_Not_Supported = "Filipino (Not Supported)"
+    Russian_Not_Supported = "Russian (Not Supported)"
+    Arabic_Not_Supported = "Arabic (Not Supported)"
+    Hindi_Not_Supported = "Hindi (Not Supported)"
 
 
 # ──────────────────────────── Request Models ────────────────────────────
@@ -17,12 +39,11 @@ class TextRequest(BaseModel):
         min_length=1,
         max_length=10000,
         description="The text content to analyze.",
-        json_schema_extra={"example": "Google Cloud Natural Language API is amazing! I love using it for text analysis."},
+        json_schema_extra={"example": "I love using Google NLP API! Masaya itong gamitin."},
     )
-    language: str = Field(
-        default="en",
-        description="ISO 639-1 language code (e.g., 'en', 'es', 'fr').",
-        json_schema_extra={"example": "en"},
+    language: LanguageCode = Field(
+        default=LanguageCode.Auto_Detect,
+        description="Select language or let the AI detect it automatically.",
     )
 
 

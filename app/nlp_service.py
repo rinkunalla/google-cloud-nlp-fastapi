@@ -10,6 +10,27 @@ from google.api_core.exceptions import GoogleAPICallError, InvalidArgument
 from app.config import get_settings
 
 
+# Map pretty names from UI to ISO-639-1 codes for Google API
+ISO_LANGUAGE_MAPPING = {
+    "Auto-detect (Recommended)": None,  # Special case for auto-detection
+    "English (Supported)": "en",
+    "Spanish (Supported)": "es",
+    "French (Supported)": "fr",
+    "German (Supported)": "de",
+    "Italian (Supported)": "it",
+    "Japanese (Supported)": "ja",
+    "Korean (Supported)": "ko",
+    "Portuguese (Supported)": "pt",
+    "Dutch (Supported)": "nl",
+    "Chinese_Simplified (Supported)": "zh",
+    "Chinese_Traditional (Supported)": "zh-Hant",
+    "Filipino (Not Supported)": "fil",
+    "Russian (Not Supported)": "ru",
+    "Arabic (Not Supported)": "ar",
+    "Hindi (Not Supported)": "hi",
+}
+
+
 def _get_client() -> language_v1.LanguageServiceClient:
     """
     Create and return a Google Cloud Language client.
@@ -32,13 +53,21 @@ def _get_client() -> language_v1.LanguageServiceClient:
     return language_v1.LanguageServiceClient()
 
 
-def _build_document(text: str, language: str = "en") -> language_v1.Document:
+def _build_document(text: str, language: str = "Auto-detect (Recommended)") -> language_v1.Document:
     """Build a Document object for the API request."""
-    return language_v1.Document(
+    # Convert pretty name to ISO code if possible
+    iso_code = ISO_LANGUAGE_MAPPING.get(language, language)
+
+    doc = language_v1.Document(
         content=text,
         type_=language_v1.Document.Type.PLAIN_TEXT,
-        language=language,
     )
+
+    # Only set language if it's not Auto-detect
+    if iso_code:
+        doc.language = iso_code
+
+    return doc
 
 
 async def analyze_sentiment(text: str, language: str = "en") -> dict:
@@ -70,7 +99,13 @@ async def analyze_sentiment(text: str, language: str = "en") -> dict:
         }
 
     except InvalidArgument as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid request: {str(e)}")
+        msg = str(e)
+        if "language" in msg.lower() and "not supported" in msg.lower():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail="This specific feature (e.g. Sentiment/Entities) is not yet supported by Google for this language. Please try English or Spanish."
+            )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid request: {msg}")
     except GoogleAPICallError as e:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Google Cloud API error: {str(e)}")
     except Exception as e:
@@ -109,7 +144,13 @@ async def analyze_entities(text: str, language: str = "en") -> dict:
         }
 
     except InvalidArgument as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid request: {str(e)}")
+        msg = str(e)
+        if "language" in msg.lower() and "not supported" in msg.lower():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail="This specific feature (e.g. Sentiment/Entities) is not yet supported by Google for this language. Please try English or Spanish."
+            )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid request: {msg}")
     except GoogleAPICallError as e:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Google Cloud API error: {str(e)}")
     except Exception as e:
@@ -143,7 +184,13 @@ async def analyze_syntax(text: str, language: str = "en") -> dict:
         }
 
     except InvalidArgument as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid request: {str(e)}")
+        msg = str(e)
+        if "language" in msg.lower() and "not supported" in msg.lower():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail="This specific feature (e.g. Sentiment/Entities) is not yet supported by Google for this language. Please try English or Spanish."
+            )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid request: {msg}")
     except GoogleAPICallError as e:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Google Cloud API error: {str(e)}")
     except Exception as e:
@@ -168,7 +215,10 @@ async def classify_text(text: str, language: str = "en") -> dict:
                 "confidence": round(category.confidence, 4),
             })
 
-        return {"categories": categories}
+        return {
+            "categories": categories,
+            "detected_language": response.language if hasattr(response, "language") else "en"
+        }
 
     except HTTPException:
         raise

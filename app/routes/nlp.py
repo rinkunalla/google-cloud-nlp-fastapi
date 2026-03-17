@@ -3,11 +3,11 @@ NLP API route handlers.
 All endpoints require API key authentication and are rate-limited.
 """
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Form
 from app.auth import verify_api_key
 from app.rate_limiter import limiter, get_rate_limit
 from app.models import (
-    TextRequest,
+    LanguageCode,
     SentimentResponse,
     EntityResponse,
     SyntaxResponse,
@@ -37,9 +37,13 @@ router = APIRouter(
     responses={400: {"model": ErrorResponse, "description": "Invalid request"}},
 )
 @limiter.limit(get_rate_limit())
-async def sentiment_analysis(request: Request, body: TextRequest):
+async def sentiment_analysis(
+    request: Request,
+    text: str = Form(..., description="The text content to analyze.", json_schema_extra={"example": "I love using Google NLP API!"}),
+    language: LanguageCode = Form(LanguageCode.Auto_Detect, description="Select the language of the text."),
+):
     """Analyze sentiment of the provided text."""
-    return await nlp_service.analyze_sentiment(body.text, body.language)
+    return await nlp_service.analyze_sentiment(text, language)
 
 
 @router.post(
@@ -51,9 +55,13 @@ async def sentiment_analysis(request: Request, body: TextRequest):
     responses={400: {"model": ErrorResponse, "description": "Invalid request"}},
 )
 @limiter.limit(get_rate_limit())
-async def entity_analysis(request: Request, body: TextRequest):
+async def entity_analysis(
+    request: Request,
+    text: str = Form(..., description="The text content to analyze.", json_schema_extra={"example": "Google was founded in Menlo Park."}),
+    language: LanguageCode = Form(LanguageCode.Auto_Detect, description="Select the language of the text."),
+):
     """Extract entities from the provided text."""
-    return await nlp_service.analyze_entities(body.text, body.language)
+    return await nlp_service.analyze_entities(text, language)
 
 
 @router.post(
@@ -65,9 +73,13 @@ async def entity_analysis(request: Request, body: TextRequest):
     responses={400: {"model": ErrorResponse, "description": "Invalid request"}},
 )
 @limiter.limit(get_rate_limit())
-async def syntax_analysis(request: Request, body: TextRequest):
+async def syntax_analysis(
+    request: Request,
+    text: str = Form(..., description="The text content to analyze.", json_schema_extra={"example": "The quick brown fox jumps."}),
+    language: LanguageCode = Form(LanguageCode.Auto_Detect, description="Select the language of the text."),
+):
     """Analyze syntax of the provided text."""
-    return await nlp_service.analyze_syntax(body.text, body.language)
+    return await nlp_service.analyze_syntax(text, language)
 
 
 @router.post(
@@ -79,6 +91,10 @@ async def syntax_analysis(request: Request, body: TextRequest):
     responses={400: {"model": ErrorResponse, "description": "Invalid request or text too short"}},
 )
 @limiter.limit(get_rate_limit())
-async def text_classification(request: Request, body: TextRequest):
+async def text_classification(
+    request: Request,
+    text: str = Form(..., description="The text content to analyze.", json_schema_extra={"example": "Python is a versatile programming language used extensively in data science, machine learning, and web development."}),
+    language: LanguageCode = Form(LanguageCode.Auto_Detect, description="Select the language of the text."),
+):
     """Classify the content of the provided text."""
-    return await nlp_service.classify_text(body.text, body.language)
+    return await nlp_service.classify_text(text, language)

@@ -6,13 +6,15 @@ A production-ready **FastAPI** application that integrates with the **Google Clo
 
 ## ✨ Features
 
-- **Sentiment Analysis** — Determine the overall sentiment (positive/negative) and emotional magnitude of text at both document and sentence level.
-- **Entity Extraction** — Identify named entities (people, organizations, locations, events, etc.) with salience scores and metadata.
-- **Syntax Analysis** — Get part-of-speech tags, dependency parse trees, and lemmas for every token.
-- **Content Classification** — Categorize text into content categories (e.g., Science, Technology, Sports).
+- **Sentiment Analysis** — Determine the overall sentiment (positive/negative) and emotional magnitude of text.
+- **Entity Extraction** — Identify people, organizations, locations, and events with metadata.
+- **Syntax Analysis** — Get part-of-speech tags and dependency parse trees.
+- **Content Classification** — Categorize text into content categories (requires 20+ words).
+- **Smart Auto-detection** — Zero configuration required; the API automatically identifies the language of your text.
+- **Form-Based Swagger UI** — Easy testing via `/docs` with dropdowns and individual input boxes.
 - **API Key Authentication** — Secure endpoints via `X-API-Key` header validation.
 - **Rate Limiting** — Prevent abuse with configurable per-key request limits (default: 10 requests/minute).
-- **Comprehensive Error Handling** — Meaningful error messages for invalid requests, auth failures, rate limits, and upstream API errors.
+- **Comprehensive Error Handling** — Meaningful error messages for language support and invalid requests.
 
 ---
 
@@ -25,6 +27,34 @@ A production-ready **FastAPI** application that integrates with the **Google Clo
 | **Google Cloud Project** | Natural Language API enabled |
 | **Service Account Key** | Primary authentication method (JSON) |
 | **Google Cloud API Key** | Alternative authentication method (simpler) |
+
+---
+
+## 🌍 Supported Languages
+
+The Google Cloud Natural Language API support varies by feature.
+
+| Feature | Supported Languages (ISO-639-1) |
+|---|---|
+| **Sentiment Analysis** | `en, es, fr, de, it, ja, ko, pt, zh, zh-Hant` |
+| **Entity Analysis** | `en, es, fr, de, it, ja, ko, pt, zh, zh-Hant` |
+| **Syntax Analysis** | `en, es, fr, de, it, ja, ko, pt, zh, zh-Hant` |
+| **Content Classification** | Primarily `en` (v2 supports more, but v1 is optimized for English) |
+
+> **Note on Filipino (Tagalog):** Currently, the Google Cloud Natural Language API does **not** support Sentiment, Entity, or Syntax analysis for Filipino (`fil`). If you try to analyze Filipino text with these features, the API will return a `400 Bad Request` error. Currently, Filipino is only supported for **Translation API** or **Cloud Speech-to-Text**, but not for the Natural Language analysis suite.
+
+### 💡 Pro-Tips for Language Detection
+
+To get the most accurate results, keep these two rules in mind:
+
+1.  **Use Native Script (Mandatory for Accuracy)**: 
+    *   If you are analyzing Japanese, Chinese, or Arabic, you **MUST** use their native characters (e.g., `こんにちは`). 
+    *   Using English letters for these languages (e.g., *Konnichiwa*) is called **Romanization**, and it is **not supported** by the Natural Language AI.
+2.  **How "Auto-detect" Works**:
+    *   By default, the API is set to **Auto-detect**. It is very smart at identifying the language based on the alphabet/script you use.
+    *   If you use English letters (`A-Z`), the AI will almost always assume you are speaking **English**, even if the words are Japanese (like "konichiwaa").
+    *   **The Fix:** If you want to analyze "Romanized" text, you must **manually select** the language from the dropdown menu to "force" the AI to use that specific model.
+
 
 ### Google Cloud Setup
 
@@ -132,7 +162,7 @@ python -m uvicorn app.main:app --reload
 
 Once the server is running, visit `http://localhost:8000/docs` to test the endpoints!
 
-Then open your browser to `http://localhost:8000/docs` to test the endpoints using the interactive Swagger UI.
+Then open your browser to `http://localhost:8000/docs`. This is the **recommended** way to test. We have specially designed the Swagger UI to use **Form-based inputs** (instead of raw JSON) and a **Smart Dropdown** for language selection.
 
 ---
 
@@ -213,12 +243,12 @@ Analyzes the sentiment of the provided text, returning document-level and senten
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/nlp/sentiment \
-  -H "Content-Type: application/json" \
   -H "X-API-Key: my-secret-key-1" \
-  -d '{
-    "text": "I absolutely love this product! It works perfectly. However, the packaging was damaged.",
-    "language": "en"
-  }'
+  -F "text=I absolutely love this product! It works perfectly." \
+  -F "language=Auto-detect (Recommended)"
+```
+
+> **Note:** The `language` field is optional. If omitted, it defaults to Auto-detect.
 ```
 
 **Response (200):**
@@ -257,12 +287,9 @@ Identifies named entities in the text with their types, salience scores, and met
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/nlp/entities \
-  -H "Content-Type: application/json" \
   -H "X-API-Key: my-secret-key-1" \
-  -d '{
-    "text": "Google was founded by Larry Page and Sergey Brin in Menlo Park, California.",
-    "language": "en"
-  }'
+  -F "text=Google was founded in Menlo Park, California."
+```
 ```
 
 **Response (200):**
@@ -299,12 +326,9 @@ Returns part-of-speech tags, dependency parse information, and lemmas for each w
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/nlp/syntax \
-  -H "Content-Type: application/json" \
   -H "X-API-Key: my-secret-key-1" \
-  -d '{
-    "text": "The quick brown fox jumps over the lazy dog.",
-    "language": "en"
-  }'
+  -F "text=The quick brown fox jumps over the lazy dog."
+```
 ```
 
 **Response (200):**
@@ -333,12 +357,9 @@ Categorizes text into content categories. **The text must contain at least 20 wo
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/nlp/classify \
-  -H "Content-Type: application/json" \
   -H "X-API-Key: my-secret-key-1" \
-  -d '{
-    "text": "Python is a versatile programming language used extensively in data science, machine learning, and web development. Its simple syntax and large ecosystem of libraries make it ideal for beginners and professionals alike.",
-    "language": "en"
-  }'
+  -F "text=Python is a versatile programming language used extensively in data science, machine learning, and web development. Its simple syntax and large ecosystem of libraries make it ideal for beginners and professionals alike."
+```
 ```
 
 **Response (200):**
