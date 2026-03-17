@@ -1,5 +1,4 @@
 # Environment
-.env
 venv/
 .venv/
 env/
@@ -14,10 +13,11 @@ dist/
 build/
 *.egg
 
-# Google Cloud credentials
-credentials.json
-service-account.json
-*-credentials.json
+# Google Cloud credentials & sensitive config
+*.json
+.env
+! .env.example
+
 
 # IDE
 .vscode/

@@ -24,8 +24,8 @@ A production-ready **FastAPI** application that integrates with the **Google Clo
 | **Python** | 3.10 or higher |
 | **Google Cloud Account** | With billing enabled (Free Tier available) |
 | **Google Cloud Project** | Natural Language API enabled |
-| **Google Cloud API Key** | Primary authentication method (simpler) |
-| **Service Account Key** | Alternative authentication method (JSON) |
+| **Service Account Key** | Primary authentication method (JSON) |
+| **Google Cloud API Key** | Alternative authentication method (simpler) |
 
 ### Google Cloud Setup
 
@@ -92,11 +92,12 @@ The API will be available at `http://localhost:8000`. Visit `http://localhost:80
 
 Follow these steps **after installation** to get everything running:
 
-### Step 1: Set Up Google Cloud API Key
+### Step 1: Set Up Service Account JSON Key
 
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
-2. Create an **API Key** if you don't have one.
-3. (Optional) If you prefer using a Service Account, download the JSON key file and place it in the project root.
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/iam-admin/serviceaccounts).
+2. Create a **Service Account** and grant it the **Cloud Natural Language API User** role.
+3. Generate and download a **JSON Key** for that account.
+4. Place the `.json` file in the project root folder.
 
 ### Step 2: Configure Your `.env` File
 
@@ -106,11 +107,11 @@ Follow these steps **after installation** to get everything running:
    ```
 2. Open `.env` and update your keys:
    ```env
-   # Option 1: YOUR GOOGLE CLOUD API KEY (Recommended)
-   GOOGLE_CLOUD_API_KEY="Input Your Google Cloud API Key Here"
+    # Option 1: Service Account JSON (Recommended)
+    GOOGLE_APPLICATION_CREDENTIALS=./cnl-api-490312-7e74fbb63952.json
 
-   # Option 2: Service Account JSON (Optional)
-   # GOOGLE_APPLICATION_CREDENTIALS=./service-account.json
+    # Option 2: YOUR GOOGLE CLOUD API KEY (Alternative)
+    # GOOGLE_CLOUD_API_KEY=your-api-key-here
 
    # YOUR CUSTOM APP KEYS (any string)
    API_KEYS="Input Your Custom App Keys Here. use comma as separator to add more keys"
@@ -144,14 +145,14 @@ Create a `.env` file in the project root with the following variables:
 
 | Variable | Description | Example |
 |---|---|---|
-| `GOOGLE_CLOUD_API_KEY` | Your Google Cloud API key (Primary Auth) | `AIzaSy...` |
+| `GOOGLE_APPLICATION_CREDENTIALS` | Path to your Google Cloud service account JSON key file | `./cnl-api-490312-7e74fbb63952.json` |
 | `API_KEYS` | Comma-separated list of valid keys for your users | `key-1,key-2` |
 | `RATE_LIMIT` | Maximum requests per time window per API key | `10/minute` |
 
 ### Example `.env` File
 
 ```env
-GOOGLE_CLOUD_API_KEY=your-actual-google-api-key
+GOOGLE_APPLICATION_CREDENTIALS=./cnl-api-490312-7e74fbb63952.json
 API_KEYS=test-api-key-1,test-api-key-2
 RATE_LIMIT=10/minute
 ```

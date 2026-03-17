@@ -17,7 +17,7 @@ The application will be live at: http://localhost:8000
 - app/auth.py: The security guard. It checks if the user provided a valid 'X-API-Key'.
 - app/rate_limiter.py: The traffic controller. It ensures no single user sends more than 10 requests per minute.
 - app/nlp_service.py: The translator. It takes your text and sends it to Google Cloud for analysis.
-- .env: The safe. It stores your Google Cloud API key and your custom app keys.
+- .env: The safe. It stores the path to your Google Cloud JSON file and your custom app keys.
 
 
 3. NECESSARY SETUP (IF NOT DONE YET)
