@@ -559,11 +559,11 @@ Google Cloud Natural Language API/
 
 | Name | Role | Contributions |
 |---|---|---|
-| *Member 1* | *Lead Developer* | *FastAPI setup, NLP service integration, endpoint development* |
-| *Member 2* | *Security & DevOps* | *Authentication implementation, rate limiting, deployment configuration* |
-| *Member 3* | *Documentation & Testing* | *README documentation, API testing, troubleshooting guide* |
-
-> **Note:** Replace the placeholder names and contributions above with your actual team member information.
+| *Yogayog, Allan Jr.* | *Lead Developer* | *Github Repository Setup, FastAPI Application Setup, API Integration* |
+| *Faroden, Jessa Mae* | *Google Account Setup* | *Billing Account Setup, API Key Generation, API Enablement* |
+| *Dagus, Wilson* | *Documentation* | *Readme documentation* |
+| *Paleg, Fernando The Third* | *Documentation* | *Troubleshooting guide* |
+| *Padonga, Jhun lloyd* | *Testing* | *API testing* |
 
 ---
 
